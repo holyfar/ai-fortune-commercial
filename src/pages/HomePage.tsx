@@ -108,7 +108,7 @@ export default function HomePage() {
           <h2 className="font-bold text-lg text-gray-800 mb-4">热门付费服务</h2>
           <div className="space-y-3">
             {PRODUCTS.filter(p => p.popular || p.type === 'single').slice(0, 3).map((product) => (
-              <Link key={product.id} to="#">
+              <Link key={product.id} to="/vip">
                 <div className="flex items-center gap-4 p-4 bg-white rounded-xl border border-gray-100 hover:border-primary-200 hover:shadow-md transition-all">
                   <div className={cn("w-12 h-12 rounded-xl flex items-center justify-center", product.type === 'membership' ? "bg-gradient-to-br from-amber-400 to-orange-500" : "bg-gradient-to-br from-primary-500 to-violet-600")}><Gem className="w-6 h-6 text-white" /></div>
                   <div className="flex-1"><h4 className="font-medium text-gray-800">{product.name}</h4><p className="text-gray-500 text-sm">{product.description}</p></div>

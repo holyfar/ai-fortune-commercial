@@ -283,17 +283,6 @@ export default function VipPage() {
                 </div>
               </div>
 
-              {/* 测试开通按钮 - 仅供测试使用 */}
-              <button
-                onClick={() => {
-                  upgradeMember(selectedDuration)
-                  setShowContactModal(false)
-                }}
-                className="w-full py-3 bg-gradient-to-r from-green-500 to-emerald-500 text-white font-bold rounded-xl mb-3"
-              >
-                测试开通 {selectedDuration === 'yearly' ? '年度会员' : '月度会员'}
-              </button>
-
               <p className="text-xs text-gray-400 text-center">
                 服务时间：周一至周日 9:00-21:00
               </p>

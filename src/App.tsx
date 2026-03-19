@@ -6,7 +6,6 @@ import XingzuoPage from './pages/XingzuoPage'
 import TaluoPage from './pages/TaluoPage'
 import ChatPage from './pages/ChatPage'
 import VipPage from './pages/VipPage'
-import AdminPage from './pages/AdminPage'
 import useAppStore from './lib/store'
 
 function App() {
@@ -25,7 +24,6 @@ function App() {
         <Route path="/taluo" element={<TaluoPage />} />
         <Route path="/chat" element={<ChatPage />} />
         <Route path="/vip" element={<VipPage />} />
-        <Route path="/admin" element={<AdminPage />} />
       </Routes>
     </HashRouter>
   )
