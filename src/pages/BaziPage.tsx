@@ -28,11 +28,11 @@ export default function BaziPage() {
   const [step, setStep] = useState(1)
   const [input, setInput] = useState<BaziInput>({ year: 2000, month: 1, day: 1, hour: 12, minute: 0, gender: '男' })
   const [result, setResult] = useState('')
-  const { user, addFortuneRecord, isMember } = useAppStore()
+  const { user, addFortuneRecord, isMember, updateUser } = useAppStore()
 
   const handleSubmit = async () => {
     if (!isMember() && (user?.freeTimes || 0) <= 0) {
-      window.location.href = '/vip'
+      window.location.hash = '#/vip'
       return
     }
     setStep(2)
@@ -40,6 +40,10 @@ export default function BaziPage() {
       const response = await aiService.analyzeBazi(input)
       setResult(response)
       setStep(3)
+      // 扣减免费次数
+      if (!isMember() && user) {
+        updateUser({ freeTimes: Math.max(0, (user.freeTimes || 0) - 1) })
+      }
       addFortuneRecord({ id: generateId(), type: 'bazi', input, result: response, createdAt: new Date() })
     } catch (error) {
       console.error('分析失败:', error)

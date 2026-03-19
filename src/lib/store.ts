@@ -1,16 +1,19 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 import type { User, FortuneRecord, ChatMessage, FortuneType } from '@/types'
+import { getUserId, checkMemberStatus, saveLocalMemberInfo } from './cloudbase'
 
 interface AppState {
   // 用户状态
   user: User | null
   setUser: (user: User | null) => void
   updateUser: (updates: Partial<User>) => void
+  initUserFromCloud: () => Promise<void>
 
   // 会员状态
   isVip: boolean
   isMember: () => boolean
+  upgradeMember: (level: 'monthly' | 'yearly' | 'lifetime') => void
 
   // 历史记录
   fortuneHistory: FortuneRecord[]
@@ -55,6 +58,24 @@ export const useAppStore = create<AppState>()(
         set((state) => ({
           user: state.user ? { ...state.user, ...updates } : null,
         })),
+      initUserFromCloud: async () => {
+        const userId = getUserId()
+        const memberStatus = await checkMemberStatus()
+        
+        if (memberStatus && memberStatus.isMember && memberStatus.memberLevel) {
+          set({
+            user: {
+              id: userId,
+              memberLevel: memberStatus.memberLevel as 'monthly' | 'yearly' | 'lifetime',
+              balance: 0,
+              freeTimes: 999,
+              createdAt: new Date(),
+              updatedAt: new Date(),
+            },
+            isVip: true,
+          })
+        }
+      },
 
       // 会员状态
       isVip: false,
@@ -62,6 +83,14 @@ export const useAppStore = create<AppState>()(
         const user = get().user
         if (!user) return false
         return ['monthly', 'yearly', 'lifetime'].includes(user.memberLevel)
+      },
+      upgradeMember: (level) => {
+        // 保存到本地存储
+        saveLocalMemberInfo(level)
+        set((state) => ({
+          user: state.user ? { ...state.user, memberLevel: level, freeTimes: 999 } : null,
+          isVip: true,
+        }))
       },
 
       // 历史记录

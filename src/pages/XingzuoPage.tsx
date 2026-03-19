@@ -35,15 +35,23 @@ export default function XingzuoPage() {
   const [timeType, setTimeType] = useState<'today' | 'week' | 'month'>('today')
   const [step, setStep] = useState(1)
   const [result, setResult] = useState('')
-  const { addFortuneRecord } = useAppStore()
+  const { user, addFortuneRecord, isMember, updateUser } = useAppStore()
 
   const handleQuery = async () => {
     if (!selectedStar) return
+    if (!isMember() && (user?.freeTimes || 0) <= 0) {
+      window.location.hash = '#/vip'
+      return
+    }
     setStep(2)
     try {
       const response = await aiService.queryStarFortune({ star: selectedStar, type: timeType })
       setResult(response)
       setStep(3)
+      // 扣减免费次数
+      if (!isMember() && user) {
+        updateUser({ freeTimes: Math.max(0, (user.freeTimes || 0) - 1) })
+      }
       addFortuneRecord({ id: generateId(), type: 'xingzuo', input: { star: selectedStar, type: timeType }, result: response, createdAt: new Date() })
     } catch (error) {
       console.error('查询失败:', error)
@@ -57,7 +65,10 @@ export default function XingzuoPage() {
         <div className="max-w-lg mx-auto px-4 py-4">
           <div className="flex items-center gap-3">
             <Link to="/" className="p-2 -ml-2 hover:bg-white/10 rounded-xl transition"><ArrowLeft className="w-5 h-5" /></Link>
-            <div><h1 className="text-lg font-bold">星座运势</h1><p className="text-white/80 text-sm">12星座 · 每日运势</p></div>
+            <div className="flex-1"><h1 className="text-lg font-bold">星座运势</h1><p className="text-white/80 text-sm">12星座 · 每日运势</p></div>
+            {!isMember() && (
+              <Link to="/vip" className="text-xs bg-white/20 px-2 py-1 rounded-lg">剩余{user?.freeTimes || 0}次</Link>
+            )}
           </div>
         </div>
       </header>

@@ -119,16 +119,29 @@ export default function HomePage() {
           </div>
         </motion.section>
 
-        <motion.section initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.6 }} className="bg-white rounded-2xl p-5 mb-6">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="font-semibold text-gray-800">今日免费次数</h3>
-            <Link to="/vip" className="text-sm text-primary-600 hover:underline">开通会员</Link>
-          </div>
-          <div className="flex items-center gap-4">
-            <div className="flex-1"><div className="h-3 bg-gray-100 rounded-full overflow-hidden"><div className="h-full bg-gradient-to-r from-primary-500 to-violet-500 rounded-full transition-all" style={{ width: `${((user?.freeTimes || 0) / 3) * 100}%` }}></div></div></div>
-            <span className="text-primary-600 font-semibold">{user?.freeTimes || 0}/3</span>
-          </div>
-        </motion.section>
+        {isMember() ? (
+          <motion.section initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.6 }} className="bg-gradient-to-r from-amber-50 to-yellow-50 rounded-2xl p-5 mb-6 border border-amber-100">
+            <div className="flex items-center justify-between mb-2">
+              <div className="flex items-center gap-2">
+                <Crown className="w-5 h-5 text-amber-500" />
+                <h3 className="font-semibold text-gray-800">会员专享</h3>
+              </div>
+              <span className="text-xs bg-amber-500 text-white px-2 py-1 rounded-full">已开通</span>
+            </div>
+            <p className="text-gray-600 text-sm">无限次使用所有功能</p>
+          </motion.section>
+        ) : (
+          <motion.section initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.6 }} className="bg-white rounded-2xl p-5 mb-6">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="font-semibold text-gray-800">今日免费次数</h3>
+              <Link to="/vip" className="text-sm text-primary-600 hover:underline">开通会员</Link>
+            </div>
+            <div className="flex items-center gap-4">
+              <div className="flex-1"><div className="h-3 bg-gray-100 rounded-full overflow-hidden"><div className="h-full bg-gradient-to-r from-primary-500 to-violet-500 rounded-full transition-all" style={{ width: `${((user?.freeTimes || 0) / 3) * 100}%` }}></div></div></div>
+              <span className="text-primary-600 font-semibold">{user?.freeTimes || 0}/3</span>
+            </div>
+          </motion.section>
+        )}
       </main>
 
       <nav className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-100 safe-area-pb">

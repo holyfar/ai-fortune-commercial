@@ -16,19 +16,27 @@ export default function ChatPage() {
   const [input, setInput] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const messagesEndRef = useRef<HTMLDivElement>(null)
-  const { user, isMember } = useAppStore()
+  const { user, isMember, updateUser } = useAppStore()
 
   const scrollToBottom = () => messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
   useEffect(() => { scrollToBottom() }, [messages])
 
   const handleSend = async () => {
     if (!input.trim() || isLoading) return
+    if (!isMember() && (user?.freeTimes || 0) <= 0) {
+      window.location.hash = '#/vip'
+      return
+    }
     const userMsg: ChatMessage = { id: generateId(), role: 'user', content: input.trim(), createdAt: new Date() }
     setMessages(prev => [...prev, userMsg])
     setInput('')
     setIsLoading(true)
     try {
       const response = await aiService.answerQuestion(userMsg.content)
+      // 扣减免费次数
+      if (!isMember() && user) {
+        updateUser({ freeTimes: Math.max(0, (user.freeTimes || 0) - 1) })
+      }
       setMessages(prev => [...prev, { id: generateId(), role: 'assistant', content: response, createdAt: new Date() }])
     } catch (error) {
       setMessages(prev => [...prev, { id: generateId(), role: 'assistant', content: '抱歉，服务暂时繁忙，请稍后再试。', createdAt: new Date() }])
